@@ -16,6 +16,8 @@ class Serial_Marsh:
         self.log_file_enable = True
         self.log_file_name = 'marsh_log_'+time.strftime("%Y%m%d%H%M%S",time.localtime(time.time()))+'.txt'
         self.fileObject = None
+        self.serial = serial.Serial()
+        self.pending = False
 
         print "\033[1;32;40m \r\n===============     Serial Marsh     =====================\r\n"
 
@@ -38,6 +40,7 @@ class Serial_Marsh:
                     else:
                         port_list_0 =list(port_list[ser_index])
                         self.port_name = port_list_0[0]
+                        self.serial.port = self.port_name
                         break
                 except ValueError:
                     print("\033[1;31;40m Please input valid number")
@@ -55,6 +58,7 @@ class Serial_Marsh:
                     print("\033[1;31;40m Input number is invalid")
                 else:
                     self.baudrate = self.badurate_list[ser_index]
+                    self.serial.baudrate = self.baudrate
                     break
             except ValueError:
                 print("\033[1;31;40m Please input valid number")
@@ -89,6 +93,8 @@ class Serial_Marsh:
         while self.alive:
             str = self.serial.readlines()
             for line in str:
+                if self.pending == True:
+                    continue
                 print "\033[1;37;40m",
                 out_line = '['+self.GetNowTime()+'] '+line
                 print out_line
@@ -112,17 +118,20 @@ class Serial_Marsh:
     def serial_cmd(self):
         print "\033[1;32;40m \r\n===============Serial Start Cmd=====================\r\n"
         while self.alive:
+            self.pending = False
             cmd = raw_input()
             if cmd == 'q':
                 break
+            elif cmd == 'b':
+                self.pending = True
+                self.select_serial_baudrate()
+            else:
+                self.serial.write(cmd)
 
         self.waitEnd.set()
         self.alive = False
 
     def open_serial_port(self):
-        self.serial = serial.Serial()
-        self.serial.port = self.port_name
-        self.serial.baudrate = self.baudrate
         self.serial.timeout = self.timeout
         self.serial.open()
         if self.serial.isOpen():
