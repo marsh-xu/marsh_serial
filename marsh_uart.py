@@ -57,11 +57,13 @@ class Serial_Marsh:
                         port_list_0 =list(port_list[ser_index])
                         self.port_name = port_list_0[0]
                         self.serial.port = self.port_name
+                        return True
                         break
                 except ValueError:
                     if self.color:
                         print "\033[1;31;40m"
                     print("Please input valid number")
+        return False
 
     def select_serial_baudrate(self):
         while True:
@@ -215,11 +217,13 @@ class Serial_Marsh:
             return False
 
     def start(self):
-        self.choose_serial_port()
-        self.select_serial_baudrate()
-        self.select_log_file_switch()
-        flag = self.open_serial_port()
-        return flag
+        if self.choose_serial_port():
+            self.select_serial_baudrate()
+            self.select_log_file_switch()
+            flag = self.open_serial_port()
+            return flag
+        else:
+            return False
 
     def waiting(self):
         if not self.waitEnd is None:
