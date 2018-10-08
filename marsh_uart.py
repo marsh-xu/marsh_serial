@@ -3,6 +3,7 @@ import serial.tools.list_ports
 import time
 import struct
 import threading
+import platform
 
 class Serial_Marsh:
     def __init__(self):
@@ -18,74 +19,114 @@ class Serial_Marsh:
         self.fileObject = None
         self.serial = serial.Serial()
         self.pending = False
+        self.color = False
 
-        print "\033[1;32;40m \r\n===============     Serial Marsh     =====================\r\n"
+        if 'Linux' == platform.system():
+            self.color = True
+
+        if self.color:
+            print "\033[1;32;40m"
+        print "===============     Serial Marsh     =====================\r\n"
 
     def choose_serial_port(self):
         port_list = list(serial.tools.list_ports.comports())
         flag = False
         if len(port_list) <= 0:
-            print "\033[1;31;40m The Serial port can't find!"
+            if self.color:
+                print "\033[1;31;40m"
+            print "The Serial port can't find!"
         else:
             while True:
-                print "\033[1;32;40m Serial port list:"
+                if self.color:
+                    print "\033[1;32;40m"
+                print "Serial port list:"
                 for i in range(0,len(port_list)):
-                    print "\033[1;37;40m"
+                    if self.color:
+                        print "\033[1;37;40m"
                     print i, port_list[i]
-                index = raw_input("\033[1;32;40m please input port number:")
+                if self.color:
+                    print "\033[1;32;40m"
+                index = raw_input("please input port number:")
                 try:
                     ser_index = int(index)
                     if ser_index >= len(port_list):
-                        print("\033[1;31;40m Input number is invalid")
+                        if self.color:
+                            print("\033[1;31;40m")
+                        print("Input number is invalid")
                     else:
                         port_list_0 =list(port_list[ser_index])
                         self.port_name = port_list_0[0]
                         self.serial.port = self.port_name
                         break
                 except ValueError:
-                    print("\033[1;31;40m Please input valid number")
+                    if self.color:
+                        print "\033[1;31;40m"
+                    print("Please input valid number")
 
     def select_serial_baudrate(self):
         while True:
-            print "\033[1;32;40m serial baudrate list:"
+            if self.color:
+                print "\033[1;32;40m"
+            print "serial baudrate list:"
             for i in range(0,len(self.badurate_list)):
-                print "\033[1;37;40m"
+                if self.color:
+                    print "\033[1;37;40m"
                 print i, self.badurate_list[i]
-            index = raw_input("\033[1;32;40m please select baudrate:")
+            if self.color:
+                print "\033[1;32;40m"
+            index = raw_input("please select baudrate:")
             try:
                 ser_index = int(index)
                 if ser_index >= len(self.badurate_list):
-                    print("\033[1;31;40m Input number is invalid")
+                    if self.color:
+                        print "\033[1;31;40m"
+                    print("Input number is invalid")
                 else:
                     self.baudrate = self.badurate_list[ser_index]
                     self.serial.baudrate = self.baudrate
                     break
             except ValueError:
-                print("\033[1;31;40m Please input valid number")
+                if self.color:
+                    print "\033[1;31;40m"
+                print("Please input valid number")
 
     def select_log_file_switch(self):
         while True:
-            print "\033[1;32;40m Please select if enable log file function:"
-            print "\033[1;37;40m0  Enable"
-            print "\033[1;37;40m1  Disable"
-            index = raw_input("\033[1;32;40m please input port number:")
+            if self.color:
+                print "\033[1;32;40m"
+            print "Please select if enable log file function:"
+            if self.color:
+                print "\033[1;37;40m"
+            print "0  Enable"
+            print "1  Disable"
+            if self.color:
+                print "\033[1;32;40m"
+            index = raw_input("please input port number:")
             try:
                 ser_index = int(index)
                 if ser_index >= 2:
-                    print("\033[1;31;40m Input number is invalid")
+                    if self.color:
+                        print "\033[1;31;40m"
+                    print("Input number is invalid")
                 else:
+                    if self.color:
+                        print "\033[1;32;40m"
                     if ser_index == 0:
                         self.log_file_enable = True
-                        print("\033[1;32;40m Enable log file function")
+                        print("Enable log file function")
                     elif ser_index == 1:
                         self.log_file_enable = False
-                        print("\033[1;32;40m Disable log file function")
+                        print("Disable log file function")
                     break
             except ValueError:
-                print("\033[1;31;40m Please input valid number")
+                if self.color:
+                    print "\033[1;31;40m"
+                print("Please input valid number")
 
     def serial_receive(self):
-        print "\033[1;32;40m \r\n===============Serial Start Reveive=====================\r\n"
+        if self.color:
+            print "\033[1;32;40m"
+        print "\r\n===============Serial Start Reveive=====================\r\n"
 
         if self.log_file_enable:
             self.fileObject = open(self.log_file_name, 'w')
@@ -95,7 +136,8 @@ class Serial_Marsh:
             for line in str:
                 if self.pending == True:
                     continue
-                print "\033[1;37;40m",
+                if self.color:
+                    print "\033[1;37;40m",
                 out_line = '['+self.GetNowTime()+'] '+line
                 print out_line
 
@@ -106,7 +148,9 @@ class Serial_Marsh:
         self.alive = False
 
     def serial_send(self):
-        print "\033[1;32;40m \r\n===============Serial Start Send=====================\r\n"
+        if self.color:
+            print "\033[1;32;40m",
+        print "\r\n===============Serial Start Send=====================\r\n"
         while self.alive:
             cmd = 'cpld_test_cmd left_earbud get_earbud_version\r\n'
             #self.serial.write(cmd)
@@ -116,7 +160,9 @@ class Serial_Marsh:
         self.alive = False
 
     def serial_cmd(self):
-        print "\033[1;32;40m \r\n===============Serial Start Cmd=====================\r\n"
+        if self.color:
+            print "\033[1;32;40m",
+        print "\r\n===============Serial Start Cmd=====================\r\n"
         while self.alive:
             self.pending = False
             cmd = raw_input()
@@ -128,11 +174,15 @@ class Serial_Marsh:
             elif cmd == 'c':
                 self.pending = True
                 ser_cmd = raw_input()
-                print "\033[1;32;40mSerial CMD: "+ser_cmd
+                if self.color:
+                    print "\033[1;32;40m",
+                print "Serial CMD: "+ser_cmd
                 self.serial.write(cmd+'\r\n')
             elif cmd == 'h':
                 self.pending = True
-                print "\033[1;32;40mUser guide:"
+                if self.color:
+                    print "\033[1;32;40m",
+                print "User guide:"
                 print "    <h> help of marsh serial application"
                 print "    <q> quit marsh serial application"
                 print "    <c> input serial command"
@@ -202,4 +252,4 @@ if __name__=='__main__':
         print(str(se))
 
     del ser
-    print "\033[1;32;40m \r\n===============    Serial Marsh End    =====================\r\n"
+    print "\r\n===============    Serial Marsh End    =====================\r\n"
