@@ -125,8 +125,19 @@ class Serial_Marsh:
             elif cmd == 'b':
                 self.pending = True
                 self.select_serial_baudrate()
-            else:
-                self.serial.write(cmd)
+            elif cmd == 'c':
+                self.pending = True
+                ser_cmd = raw_input()
+                print "\033[1;32;40mSerial CMD: "+ser_cmd
+                self.serial.write(cmd+'\r\n')
+            elif cmd == 'h':
+                self.pending = True
+                print "\033[1;32;40mUser guide:"
+                print "    <h> help of marsh serial application"
+                print "    <q> quit marsh serial application"
+                print "    <c> input serial command"
+                print "    <b> switch serial baudrate"
+                raw_input()
 
         self.waitEnd.set()
         self.alive = False
