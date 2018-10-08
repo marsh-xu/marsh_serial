@@ -7,6 +7,7 @@ import threading
 class Serial_Marsh:
     def __init__(self):
         self.serial = None
+        self.badurate_list = [921600, 115200, 19200, 9600]
         self.baudrate = 115200
         self.timeout = 0.005
         self.port_name = None
@@ -40,6 +41,23 @@ class Serial_Marsh:
                         break
                 except ValueError:
                     print("\033[1;31;40m Please input valid number")
+
+    def select_serial_baudrate(self):
+        while True:
+            print "\033[1;32;40m serial baudrate list:"
+            for i in range(0,len(self.badurate_list)):
+                print "\033[1;37;40m"
+                print i, self.badurate_list[i]
+            index = raw_input("\033[1;32;40m please select baudrate:")
+            try:
+                ser_index = int(index)
+                if ser_index >= len(self.badurate_list):
+                    print("\033[1;31;40m Input number is invalid")
+                else:
+                    self.baudrate = self.badurate_list[ser_index]
+                    break
+            except ValueError:
+                print("\033[1;31;40m Please input valid number")
 
     def select_log_file_switch(self):
         while True:
@@ -128,6 +146,7 @@ class Serial_Marsh:
 
     def start(self):
         self.choose_serial_port()
+        self.select_serial_baudrate()
         self.select_log_file_switch()
         flag = self.open_serial_port()
         return flag
