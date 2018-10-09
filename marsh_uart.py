@@ -179,7 +179,7 @@ class Serial_Marsh:
                 if self.color:
                     print "\033[1;32;40m",
                 print "Serial CMD: "+ser_cmd
-                self.serial.write(cmd+'\r\n')
+                self.serial.write(ser_cmd+'\r\n')
             elif cmd == 'h':
                 self.pending = True
                 if self.color:
