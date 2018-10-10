@@ -1,0 +1,10 @@
+child_version
+cpld_test_cmd left_earbud get_earbud_version
+cpld_test_cmd right_earbud get_earbud_version
+cpld_test_cmd left_earbud get_paire_status
+cpld_test_cmd right_earbud bone_sensor_start
+cpld_test_cmd left_earbud bone_sensor_start
+cpld_test_cmd right_earbud get_bt_addr
+cpld_test_cmd left_earbud get_bt_addr
+cpld_test_cmd right_earbud get_p_sensor_test_data
+cpld_test_cmd left_earbud get_p_sensor_test_data

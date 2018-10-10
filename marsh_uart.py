@@ -20,6 +20,8 @@ class Serial_Marsh:
         self.serial = serial.Serial()
         self.pending = False
         self.color = False
+        self.cmd_file_name = 'cmd.txt'
+        self.cmd_switch = False
 
         if 'Linux' == platform.system():
             self.color = True
@@ -154,9 +156,14 @@ class Serial_Marsh:
             print "\033[1;32;40m",
         print "\r\n===============Serial Start Send=====================\r\n"
         while self.alive:
-            cmd = 'cpld_test_cmd left_earbud get_earbud_version\r\n'
-            #self.serial.write(cmd)
-            time.sleep(1)
+            cmd = file(self.cmd_file_name,"r+")
+            cmd = cmd.read()
+            cmd=cmd.split("\n")
+            for cmd_s in cmd:
+                if self.cmd_switch:
+                    self.serial.write(cmd_s)
+                    time.sleep(1)
+            time.sleep(2)
 
         self.waitEnd.set()
         self.alive = False
@@ -180,6 +187,11 @@ class Serial_Marsh:
                     print "\033[1;32;40m",
                 print "Serial CMD: "+ser_cmd
                 self.serial.write(ser_cmd+'\r\n')
+            elif cmd == 's':
+                if self.cmd_switch:
+                    self.cmd_switch = False
+                else:
+                    self.cmd_switch = True
             elif cmd == 'h':
                 self.pending = True
                 if self.color:
@@ -189,6 +201,7 @@ class Serial_Marsh:
                 print "    <q> quit marsh serial application"
                 print "    <c> input serial command"
                 print "    <b> switch serial baudrate"
+                print "    <s> start/stop run command in cmd.txt"
                 raw_input()
 
         self.waitEnd.set()
